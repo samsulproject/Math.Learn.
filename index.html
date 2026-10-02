@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learn</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="loginPage" class="login-page">
+    <div class="login-card">
+        <div class="logo">∑</div>
+
+        <h1>Math Learn</h1>
+        <p>Belajar matematika dengan latihan, analisis, dan HOTS.</p>
+
+        <label>Nama Siswa</label>
+        <input type="text" id="studentName" placeholder="Masukkan nama">
+
+        <label>Kelas</label>
+        <select id="studentClass">
+            <option value="">Pilih kelas</option>
+            <option value="10">Kelas 10</option>
+            <option value="11">Kelas 11</option>
+            <option value="12">Kelas 12</option>
+        </select>
+
+        <button class="primary-btn" onclick="startLearning()">
+            Mulai Belajar
+        </button>
+    </div>
+</section>
+
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <span>∑</span>
+            <strong>Math Learn</strong>
+        </div>
+
+        <div class="student-mini">
+            <div class="avatar" id="avatar">A</div>
+
+            <div>
+                <strong id="sideName">Siswa</strong>
+                <small id="sideClass">Kelas 10</small>
+            </div>
+        </div>
+
+        <nav>
+            <button onclick="showPage('dashboardPage')">🏠 Dashboard</button>
+            <button onclick="showPage('materiPage')">📚 Materi</button>
+            <button onclick="showPage('latihanPage')">✏️ Latihan</button>
+            <button onclick="showPage('kuisPage')">🧠 Kuis</button>
+            <button onclick="showPage('ujianPage')">⏱️ Ujian</button>
+            <button onclick="showPage('bankPage')">🗂️ Bank Soal</button>
+            <button onclick="showPage('riwayatPage')">📊 Riwayat Nilai</button>
+        </nav>
+
+        <button class="logout-btn" onclick="logout()">
+            Keluar
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h2 id="pageTitle">Dashboard</h2>
+                <p id="welcomeText">Selamat datang!</p>
+            </div>
+
+            <div class="top-profile">
+                <span id="topName">Siswa</span>
+                <div class="avatar small" id="topAvatar">A</div>
+            </div>
+        </header>
+
+
+        <!-- ================= DASHBOARD ================= -->
+        <section id="dashboardPage" class="page">
+
+            <div class="hero">
+                <div>
+                    <span class="badge">MATH LEARN</span>
+                    <h1>Belajar matematika dengan cara yang lebih cerdas.</h1>
+                    <p>
+                        Pahami konsep, latihan soal, analisis kesalahan,
+                        dan tingkatkan kemampuan matematika.
+                    </p>
+
+                    <button class="primary-btn" onclick="showPage('latihanPage')">
+                        Mulai Latihan
+                    </button>
+                </div>
+
+                <div class="hero-symbol">
+                    ∫
+                </div>
+            </div>
+
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <span>📝</span>
+                    <h3 id="totalQuestions">0</h3>
+                    <p>Soal Dikerjakan</p>
+                </div>
+
+                <div class="stat-card">
+                    <span>✅</span>
+                    <h3 id="correctQuestions">0</h3>
+                    <p>Jawaban Benar</p>
+                </div>
+
+                <div class="stat-card">
+                    <span>❌</span>
+                    <h3 id="wrongQuestions">0</h3>
+                    <p>Jawaban Salah</p>
+                </div>
+
+                <div class="stat-card">
+                    <span>🏆</span>
+                    <h3 id="averageScore">0</h3>
+                    <p>Nilai Rata-rata</p>
+                </div>
+
+            </div>
+
+
+            <div class="content-grid">
+
+                <div class="panel">
+                    <h2>Progress Belajar</h2>
+
+                    <div class="progress-item">
+                        <div>
+                            <span>Eksponen</span>
+                            <strong>80%</strong>
+                        </div>
+                        <div class="progress">
+                            <span style="width:80%"></span>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div>
+                            <span>Fungsi</span>
+                            <strong>70%</strong>
+                        </div>
+                        <div class="progress">
+                            <span style="width:70%"></span>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div>
+                            <span>Trigonometri</span>
+                            <strong>60%</strong>
+                        </div>
+                        <div class="progress">
+                            <span style="width:60%"></span>
+                        </div>
+                    </div>
+
+                    <div class="progress-item">
+                        <div>
+                            <span>Turunan</span>
+                            <strong>50%</strong>
+                        </div>
+                        <div class="progress">
+                            <span style="width:50%"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="panel recommendation">
+                    <h2>Rekomendasi</h2>
+
+                    <div class="recommendation-box">
+                        <span>💡</span>
+                        <div>
+                            <strong>Latihan Logaritma</strong>
+                            <p>
+                                Kamu dapat memperkuat pemahaman
+                                konsep logaritma.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="secondary-btn" onclick="startPractice()">
+                        Mulai Latihan
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= MATERI ================= -->
+        <section id="materiPage" class="page hidden">
+
+            <div class="section-header">
+                <div>
+                    <h1>Materi Matematika</h1>
+                    <p>Materi berdasarkan kelas kamu.</p>
+                </div>
+            </div>
+
+            <div id="materiContainer" class="materi-grid"></div>
+
+        </section>
+
+
+        <!-- ================= LATIHAN ================= -->
+        <section id="latihanPage" class="page hidden">
+
+            <div class="quiz-header">
+                <div>
+                    <span class="badge orange">LATIHAN</span>
+                    <h1>Latihan Standar</h1>
+                </div>
+
+                <div class="quiz-info">
+                    <strong id="questionCounter">0 / 10</strong>
+                </div>
+            </div>
+
+            <div id="quizContainer"></div>
+
+        </section>
+
+
+        <!-- ================= KUIS ================= -->
+        <section id="kuisPage" class="page hidden">
+
+            <div class="mode-card">
+                <div class="mode-icon">🧠</div>
+
+                <h1>Kuis Tingkat Lanjut</h1>
+
+                <p>
+                    1 soal menengah, 4 soal sulit,
+                    dan 5 soal HOTS.
+                </p>
+
+                <ul>
+                    <li>10 soal</li>
+                    <li>Pilihan A–E</li>
+                    <li>Pembahasan tersedia setelah selesai</li>
+                </ul>
+
+                <button class="primary-btn" onclick="startAdvancedQuiz()">
+                    Mulai Kuis
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- ================= UJIAN ================= -->
+        <section id="ujianPage" class="page hidden">
+
+            <div class="mode-card">
+
+                <div class="mode-icon">⏱️</div>
+
+                <h1>Mode Ujian</h1>
+
+                <p>
+                    Simulasi ujian matematika dengan batas waktu.
+                </p>
+
+                <div class="exam-setting">
+
+                    <label>Jumlah soal</label>
+
+                    <select id="examAmount">
+                        <option value="10">10 Soal</option>
+                        <option value="20">20 Soal</option>
+                    </select>
+
+                    <label>Waktu</label>
+
+                    <select id="examTime">
+                        <option value="10">10 Menit</option>
+                        <option value="30">30 Menit</option>
+                        <option value="60">60 Menit</option>
+                    </select>
+
+                </div>
+
+                <button class="primary-btn" onclick="startExam()">
+                    Mulai Ujian
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= BANK SOAL ================= -->
+        <section id="bankPage" class="page hidden">
+
+            <div class="section-header">
+
+                <div>
+                    <h1>Bank Soal</h1>
+                    <p>Generator soal matematika.</p>
+                </div>
+
+            </div>
+
+            <div class="generator-card">
+
+                <label>Kelas</label>
+
+                <select id="generatorClass">
+                    <option value="10">Kelas 10</option>
+                    <option value="11">Kelas 11</option>
+                    <option value="12">Kelas 12</option>
+                </select>
+
+                <label>Materi</label>
+
+                <select id="generatorTopic">
+                    <option value="all">Semua Materi</option>
+                    <option value="eksponen">Eksponen & Logaritma</option>
+                    <option value="kuadrat">Persamaan Kuadrat</option>
+                    <option value="fungsi">Fungsi</option>
+                    <option value="trigonometri">Trigonometri</option>
+                    <option value="barisan">Barisan & Deret</option>
+                    <option value="matriks">Matriks</option>
+                    <option value="limit">Limit</option>
+                    <option value="turunan">Turunan</option>
+                    <option value="integral">Integral</option>
+                    <option value="peluang">Peluang</option>
+                </select>
+
+                <label>Kesulitan</label>
+
+                <select id="generatorDifficulty">
+                    <option value="mudah">Mudah</option>
+                    <option value="menengah">Menengah</option>
+                    <option value="sulit">Sulit</option>
+                    <option value="hots">HOTS</option>
+                </select>
+
+                <button class="primary-btn" onclick="generateQuestion()">
+                    Generate Soal
+                </button>
+
+            </div>
+
+            <div id="generatedQuestion"></div>
+
+        </section>
+
+
+        <!-- ================= RIWAYAT ================= -->
+        <section id="riwayatPage" class="page hidden">
+
+            <div class="section-header">
+
+                <div>
+                    <h1>Riwayat Nilai</h1>
+                    <p>Perkembangan hasil latihan kamu.</p>
+                </div>
+
+            </div>
+
+            <div id="historyContainer"></div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<!-- MODAL PEMBAHASAN -->
+<div id="explanationModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <button class="close-btn" onclick="closeExplanation()">×</button>
+
+        <h2>Pembahasan</h2>
+
+        <div id="explanationContent"></div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
