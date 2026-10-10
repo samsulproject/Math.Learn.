@@ -1,2069 +1,1914 @@
 /* =====================================================
-   MATH LEARN
-   Sistem Pembelajaran Matematika
-===================================================== */
-
-
-/* =====================================================
-   DATA SISWA
-===================================================== */
-
-let student = {
-    name: "",
-    class: ""
-};
-
-let currentQuestions = [];
-let currentQuestionIndex = 0;
-let userAnswers = [];
-let quizMode = "practice";
-
-let examTimer = null;
-let remainingSeconds = 0;
-
-
-/* =====================================================
-   DATABASE SOAL
-===================================================== */
-
-const questionBank = [
-
-/* =========================
-   KELAS 10
-========================= */
-
-{
-    id: "K10-EXP-001",
-    class: 10,
-    topic: "eksponen",
-    difficulty: "sulit",
-    type: "Pilihan Ganda",
-
-    question:
-        "Tentukan semua nilai real x yang memenuhi 2^(2x) - 5(2^x) + 6 = 0.",
-
-    options: [
-        "x = 0 dan x = 1",
-        "x = 1 dan x = 2",
-        "x = 0 dan x = log₂3",
-        "x = 1 dan x = log₂3",
-        "x = 2 dan x = log₂3"
-    ],
-
-    answer: 3,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1 — Substitusi</h3>
-
-        Misalkan:
-        <br><br>
-        <code>t = 2^x</code>
-
-        Maka:
-        <br><br>
-        <code>2^(2x) = (2^x)^2 = t²</code>
-
-        sehingga persamaan menjadi:
-
-        <br><br>
-        <code>t² - 5t + 6 = 0</code>
-
-        <h3>Langkah 2 — Faktorisasi</h3>
-
-        <code>(t - 2)(t - 3) = 0</code>
-
-        Jadi:
-
-        <br><br>
-        <code>t = 2</code>
-
-        atau
-
-        <code>t = 3</code>
-
-        <h3>Langkah 3 — Kembali ke x</h3>
-
-        Karena <code>t = 2^x</code>:
-
-        <br><br>
-        <code>2^x = 2</code>
-
-        sehingga:
-
-        <code>x = 1</code>
-
-        Kemudian:
-
-        <br><br>
-
-        <code>2^x = 3</code>
-
-        sehingga:
-
-        <code>x = log₂3</code>
-
-        <h3>Jawaban</h3>
-
-        <strong>x = 1 atau x = log₂3</strong>
-
-        </div>
-    `,
-
-    points: 15
-},
-
-
-{
-    id: "K10-KUA-001",
-    class: 10,
-    topic: "kuadrat",
-    difficulty: "sulit",
-
-    question:
-        "Diketahui x² -(k+2)x + 2k = 0 memiliki dua akar real berbeda x₁ dan x₂. Jika x₁²+x₂²=20, tentukan semua nilai k.",
-
-    options: [
-        "k = -6 dan k = 4",
-        "k = -4 dan k = 6",
-        "k = 2 dan k = 4",
-        "k = -2 dan k = 6",
-        "k = 1 dan k = 5"
-    ],
-
-    answer: 0,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1 — Gunakan hubungan akar</h3>
-
-        Dari persamaan:
-
-        <br><br>
-
-        <code>x² -(k+2)x + 2k = 0</code>
-
-        diperoleh:
-
-        <br><br>
-
-        <code>x₁+x₂ = k+2</code>
-
-        <br>
-
-        <code>x₁x₂ = 2k</code>
-
-        <h3>Langkah 2 — Gunakan identitas</h3>
-
-        <code>x₁²+x₂²=(x₁+x₂)²-2x₁x₂</code>
-
-        sehingga:
-
-        <br><br>
-
-        <code>20=(k+2)²-4k</code>
-
-        <h3>Langkah 3 — Sederhanakan</h3>
-
-        <code>20=k²+4k+4-4k</code>
-
-        <br>
-
-        <code>20=k²+4</code>
-
-        <br>
-
-        <code>k²=16</code>
-
-        Jadi:
-
-        <br>
-
-        <code>k=4 atau k=-4</code>
-
-        <h3>Langkah 4 — Periksa akar berbeda</h3>
-
-        Diskriminan:
-
-        <br><br>
-
-        <code>D=(k+2)²-8k</code>
-
-        <br>
-
-        <code>D=k²-4k+4=(k-2)²</code>
-
-        Untuk k = 4:
-
-        <code>D=4 > 0</code>
-
-        Untuk k = -4:
-
-        <code>D=36 > 0</code>
-
-        Keduanya memenuhi syarat.
-
-        <h3>Jawaban</h3>
-
-        <strong>k = 4 dan k = -4</strong>
-
-        </div>
-    `,
-
-    points: 15
-},
-
-
-{
-    id: "K10-FUN-001",
-    class: 10,
-    topic: "fungsi",
-    difficulty: "menengah",
-
-    question:
-        "Diketahui f(x) = (2x-3)/(x+1). Tentukan invers fungsi tersebut.",
-
-    options: [
-        "(x+3)/(2-x)",
-        "(x+3)/(x-2)",
-        "(3-x)/(x+2)",
-        "(x-3)/(x+2)",
-        "(2x-3)/(x+1)"
-    ],
-
-    answer: 0,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1</h3>
-
-        Misalkan:
-
-        <br><br>
-
-        <code>y=(2x-3)/(x+1)</code>
-
-        <h3>Langkah 2</h3>
-
-        Kalikan silang:
-
-        <br><br>
-
-        <code>y(x+1)=2x-3</code>
-
-        <br>
-
-        <code>yx+y=2x-3</code>
-
-        <h3>Langkah 3</h3>
-
-        Kumpulkan x:
-
-        <br><br>
-
-        <code>yx-2x=-3-y</code>
-
-        <br>
-
-        <code>x(y-2)=-(y+3)</code>
-
-        <br>
-
-        <code>x=(y+3)/(2-y)</code>
-
-        Jadi:
-
-        <br><br>
-
-        <code>f⁻¹(x)=(x+3)/(2-x)</code>
-
-        </div>
-    `,
-
-    points: 10
-},
-
-
-{
-    id: "K10-TRI-001",
-    class: 10,
-    topic: "trigonometri",
-    difficulty: "hots",
-
-    question:
-        "Jika sin x + cos x = √2/2 dan 0° < x < 180°, tentukan semua kemungkinan nilai sin 2x.",
-
-    options: [
-        "1/2",
-        "-1/2",
-        "0",
-        "1/2 atau -1/2",
-        "√2/2"
-    ],
-
-    answer: 3,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1</h3>
-
-        Kuadratkan:
-
-        <br><br>
-
-        <code>(sin x + cos x)² = 1/2</code>
-
-        <br>
-
-        <code>sin²x + cos²x + 2sin x cos x = 1/2</code>
-
-        Karena:
-
-        <br>
-
-        <code>sin²x + cos²x = 1</code>
-
-        maka:
-
-        <br>
-
-        <code>1 + 2sin x cos x = 1/2</code>
-
-        sehingga:
-
-        <br>
-
-        <code>2sin x cos x = -1/2</code>
-
-        <h3>Langkah 2</h3>
-
-        Gunakan:
-
-        <br>
-
-        <code>sin 2x = 2sin x cos x</code>
-
-        sehingga:
-
-        <br>
-
-        <strong>sin 2x = -1/2</strong>
-
-        </div>
-    `,
-
-    points: 20
-},
-
-
-{
-    id: "K10-SPL-001",
-    class: 10,
-    topic: "fungsi",
-    difficulty: "menengah",
-
-    question:
-        "Diberikan x+y+z=6, 2x-y+3z=9, dan x+2y-z=2. Tentukan x²+y²+z².",
-
-    options: [
-        "10",
-        "12",
-        "14",
-        "16",
-        "18"
-    ],
-
-    answer: 2,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1</h3>
-
-        Sistem:
-
-        <br><br>
-
-        x+y+z=6
-
-        <br>
-
-        2x-y+3z=9
-
-        <br>
-
-        x+2y-z=2
-
-        <h3>Langkah 2</h3>
-
-        Dari persamaan pertama:
-
-        <br>
-
-        <code>y=6-x-z</code>
-
-        Substitusi ke persamaan ketiga:
-
-        <br>
-
-        <code>x+2(6-x-z)-z=2</code>
-
-        <br>
-
-        <code>-x-3z=-10</code>
-
-        sehingga:
-
-        <br>
-
-        <code>x+3z=10</code>
-
-        Substitusi ke persamaan kedua menghasilkan:
-
-        <br>
-
-        <code>3x+4z=15</code>
-
-        Dari kedua persamaan:
-
-        <br>
-
-        x+3z=10
-
-        <br>
-
-        3x+4z=15
-
-        diperoleh:
-
-        <br>
-
-        <code>z=15/5 = 3</code>
-
-        dan:
-
-        <code>x=1</code>
-
-        sehingga:
-
-        <code>y=2</code>
-
-        <h3>Langkah 3</h3>
-
-        <code>x²+y²+z² = 1²+2²+3² = 14</code>
-
-        </div>
-    `,
-
-    points: 10
-},
-
-
-/* =========================
-   KELAS 11
-========================= */
-
-{
-    id: "K11-BAR-001",
-    class: 11,
-    topic: "barisan",
-    difficulty: "menengah",
-
-    question:
-        "Suatu barisan aritmetika memiliki jumlah 10 suku pertama sebesar 210. Jika suku ke-3 adalah 12, tentukan suku ke-20.",
-
-    options: [
-        "48",
-        "52",
-        "56",
-        "60",
-        "64"
-    ],
-
-    answer: 2,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1</h3>
-
-        Rumus jumlah n suku:
-
-        <br>
-
-        <code>Sₙ=n/2(2a+(n-1)d)</code>
-
-        Untuk n=10:
-
-        <br>
-
-        <code>210=5(2a+9d)</code>
-
-        sehingga:
-
-        <br>
-
-        <code>2a+9d=42</code>
-
-        <h3>Langkah 2</h3>
-
-        Suku ketiga:
-
-        <br>
-
-        <code>a+2d=12</code>
-
-        Kalikan 2:
-
-        <br>
-
-        <code>2a+4d=24</code>
-
-        Kurangkan:
-
-        <br>
-
-        <code>5d=18</code>
-
-        <br>
-
-        <code>d=3,6</code>
-
-        Dari:
-
-        <br>
-
-        <code>a+2(3,6)=12</code>
-
-        diperoleh:
-
-        <br>
-
-        <code>a=4,8</code>
-
-        <h3>Langkah 3</h3>
-
-        Suku ke-20:
-
-        <br>
-
-        <code>U₂₀=a+19d</code>
-
-        <br>
-
-        <code>=4,8+19(3,6)</code>
-
-        <br>
-
-        <strong>=73,2</strong>
-
-        </div>
-    `,
-
-    points: 10
-},
-
-
-{
-    id: "K11-MAT-001",
-    class: 11,
-    topic: "matriks",
-    difficulty: "sulit",
-
-    question:
-        "Diberikan A = [[2,1],[3,2]]. Jika A² - 3A + kI = 0, tentukan k.",
-
-    options: [
-        "-2",
-        "-1",
-        "0",
-        "1",
-        "2"
-    ],
-
-    answer: 4,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1 — Hitung A²</h3>
-
-        <code>
-        A² =
-        [2 1] [2 1]
-        [3 2] [3 2]
-        </code>
-
-        Hasil:
-
-        <br>
-
-        <code>
-        A² = [7 4]
-             [12 7]
-        </code>
-
-        <h3>Langkah 2</h3>
-
-        <code>
-        3A = [6 3]
-             [9 6]
-        </code>
-
-        Maka:
-
-        <br>
-
-        <code>
-        A²-3A = [1 1]
-                [3 1]
-        </code>
-
-        Catatan: persamaan yang diberikan tidak menghasilkan
-        matriks nol untuk suatu k skalar karena elemen di luar
-        diagonal tetap tidak nol.
-
-        Jadi soal ini merupakan contoh penting bahwa sistem
-        generator harus melakukan validasi aljabar sebelum
-        memasukkan soal ke bank soal.
-
-        </div>
-    `,
-
-    points: 15
-},
-
-
-{
-    id: "K11-LIM-001",
-    class: 11,
-    topic: "limit",
-    difficulty: "menengah",
-
-    question:
-        "Hitung lim x→2 (x³-8)/(x²-4).",
-
-    options: [
-        "1",
-        "2",
-        "3",
-        "4",
-        "6"
-    ],
-
-    answer: 2,
-
-    explanation: `
-        <div class="explanation">
-
-        Faktorkan:
-
-        <br>
-
-        <code>x³-8=(x-2)(x²+2x+4)</code>
-
-        dan:
-
-        <br>
-
-        <code>x²-4=(x-2)(x+2)</code>
-
-        Maka:
-
-        <br>
-
-        <code>
-        lim x→2 (x²+2x+4)/(x+2)
-        </code>
-
-        Substitusi x=2:
-
-        <br>
-
-        <code>(4+4+4)/4=3</code>
-
-        Jadi jawabannya:
-
-        <strong>3</strong>
-
-        </div>
-    `,
-
-    points: 10
-},
-
-
-{
-    id: "K11-TUR-001",
-    class: 11,
-    topic: "turunan",
-    difficulty: "sulit",
-
-    question:
-        "Diketahui f(x)=x³-6x²+9x+4. Tentukan titik stasioner fungsi.",
-
-    options: [
-        "(1,8) dan (3,4)",
-        "(1,8) dan (3,4)",
-        "(1,8) dan (3,4)",
-        "(2,6) dan (3,4)",
-        "(0,4) dan (3,4)"
-    ],
-
-    answer: 0,
-
-    explanation: `
-        <div class="explanation">
-
-        Turunkan:
-
-        <br>
-
-        <code>f'(x)=3x²-12x+9</code>
-
-        Faktorkan:
-
-        <br>
-
-        <code>3(x²-4x+3)=0</code>
-
-        <br>
-
-        <code>(x-1)(x-3)=0</code>
-
-        Maka:
-
-        <br>
-
-        <code>x=1 atau x=3</code>
-
-        Hitung nilai fungsi:
-
-        <br>
-
-        <code>f(1)=1-6+9+4=8</code>
-
-        <br>
-
-        <code>f(3)=27-54+27+4=4</code>
-
-        Jadi titik stasioner:
-
-        <br>
-
-        <strong>(1,8) dan (3,4)</strong>
-
-        </div>
-    `,
-
-    points: 15
-},
-
-
-/* =========================
-   KELAS 12
-========================= */
-
-{
-    id: "K12-INT-001",
-    class: 12,
-    topic: "integral",
-    difficulty: "menengah",
-
-    question:
-        "Tentukan ∫(3x²-4x+5) dx.",
-
-    options: [
-        "x³-2x²+5x+C",
-        "3x³-4x²+5x+C",
-        "x³-4x²+5x+C",
-        "x³-2x²+5+C",
-        "3x³-2x²+5x+C"
-    ],
-
-    answer: 0,
-
-    explanation: `
-        <div class="explanation">
-
-        Integralkan setiap suku:
-
-        <br>
-
-        ∫3x² dx = x³
-
-        <br>
-
-        ∫-4x dx = -2x²
-
-        <br>
-
-        ∫5 dx = 5x
-
-        Maka:
-
-        <br>
-
-        <strong>x³-2x²+5x+C</strong>
-
-        </div>
-    `,
-
-    points: 10
-},
-
-
-{
-    id: "K12-INT-002",
-    class: 12,
-    topic: "integral",
-    difficulty: "hots",
-
-    question:
-        "Tentukan luas daerah yang dibatasi y=x² dan y=2x+3.",
-
-    options: [
-        "8/3",
-        "16/3",
-        "32/3",
-        "10",
-        "12"
-    ],
-
-    answer: 2,
-
-    explanation: `
-        <div class="explanation">
-
-        <h3>Langkah 1 — Titik potong</h3>
-
-        Samakan:
-
-        <br>
-
-        <code>x²=2x+3</code>
-
-        <br>
-
-        <code>x²-2x-3=0</code>
-
-        <br>
-
-        <code>(x-3)(x+1)=0</code>
-
-        Jadi:
-
-        <br>
-
-        <code>x=-1 dan x=3</code>
-
-        <h3>Langkah 2 — Tentukan fungsi atas</h3>
-
-        Pada interval tersebut:
-
-        <br>
-
-        <code>2x+3 > x²</code>
-
-        sehingga luas:
-
-        <br>
-
-        <code>
-        A=∫[-1,3] ((2x+3)-x²) dx
-        </code>
-
-        <h3>Langkah 3 — Integralkan</h3>
-
-        <code>
-        A=[x²+3x-x³/3]₋₁³
-        </code>
-
-        Hasil akhirnya:
-
-        <br>
-
-        <strong>A = 32/3 satuan luas</strong>
-
-        </div>
-    `,
-
-    points: 20
-},
-
-
-{
-    id: "K12-PEL-001",
-    class: 12,
-    topic: "peluang",
-    difficulty: "sulit",
-
-    question:
-        "Dalam kotak terdapat 5 bola merah, 4 biru, dan 3 hijau. Dua bola diambil tanpa pengembalian. Peluang kedua bola memiliki warna berbeda adalah...",
-
-    options: [
-        "47/66",
-        "49/66",
-        "51/66",
-        "53/66",
-        "55/66"
-    ],
-
-    answer: 0,
-
-    explanation: `
-        <div class="explanation">
-
-        Total bola:
-
-        <br>
-
-        <code>5+4+3=12</code>
-
-        Total cara mengambil dua bola:
-
-        <br>
-
-        <code>C(12,2)=66</code>
-
-        Cara mengambil warna sama:
-
-        <br>
-
-        <code>C(5,2)+C(4,2)+C(3,2)</code>
-
-        <br>
-
-        <code>=10+6+3=19</code>
-
-        Maka cara warna berbeda:
-
-        <br>
-
-        <code>66-19=47</code>
-
-        Jadi peluang:
-
-        <br>
-
-        <strong>47/66</strong>
-
-        </div>
-    `,
-
-    points: 15
-}
+   MATHLEARN 3.0
+   ===================================================== */
+
+
+/* ================= DATA MATERI ================= */
+
+const topics = [
+
+    {
+        id: 1,
+        title: "Operasi Bilangan",
+        icon: "➕",
+        description: "Penjumlahan, pengurangan, perkalian, dan pembagian bilangan.",
+        formula: "a + b, a − b, a × b, a ÷ b",
+        example: "12 + 8 = 20",
+        generator: generateInteger
+    },
+
+    {
+        id: 2,
+        title: "Pecahan",
+        icon: "½",
+        description: "Operasi dasar pada bilangan pecahan.",
+        formula: "a/b + c/b = (a+c)/b",
+        example: "1/4 + 2/4 = 3/4",
+        generator: generateFraction
+    },
+
+    {
+        id: 3,
+        title: "Persentase",
+        icon: "%",
+        description: "Menghitung persentase dari suatu bilangan.",
+        formula: "Persentase = bagian / total × 100%",
+        example: "20% dari 200 = 40",
+        generator: generatePercent
+    },
+
+    {
+        id: 4,
+        title: "Perbandingan",
+        icon: "⚖️",
+        description: "Menyelesaikan masalah menggunakan perbandingan.",
+        formula: "a : b = c : d",
+        example: "2 : 3 dengan total 25",
+        generator: generateRatio
+    },
+
+    {
+        id: 5,
+        title: "FPB & KPK",
+        icon: "🔢",
+        description: "Mencari faktor persekutuan terbesar dan kelipatan persekutuan terkecil.",
+        formula: "FPB dan KPK dari dua bilangan",
+        example: "FPB(12,18) = 6",
+        generator: generateGcdLcm
+    },
+
+    {
+        id: 6,
+        title: "Pangkat",
+        icon: "x²",
+        description: "Memahami operasi bilangan berpangkat.",
+        formula: "aⁿ = a × a × ... × a",
+        example: "2³ = 8",
+        generator: generatePower
+    },
+
+    {
+        id: 7,
+        title: "Akar",
+        icon: "√",
+        description: "Menentukan nilai akar kuadrat.",
+        formula: "√a × √a = a",
+        example: "√81 = 9",
+        generator: generateRoot
+    },
+
+    {
+        id: 8,
+        title: "Aljabar",
+        icon: "x",
+        description: "Operasi dan substitusi bentuk aljabar.",
+        formula: "ax + b",
+        example: "3x + 2 untuk x = 4 adalah 14",
+        generator: generateAlgebra
+    },
+
+    {
+        id: 9,
+        title: "Persamaan Linear",
+        icon: "=", 
+        description: "Menyelesaikan persamaan linear satu variabel.",
+        formula: "ax + b = c",
+        example: "2x + 4 = 10 → x = 3",
+        generator: generateLinear
+    },
+
+    {
+        id: 10,
+        title: "SPLDV",
+        icon: "🧮",
+        description: "Sistem persamaan linear dua variabel.",
+        formula: "ax + by = c",
+        example: "x + y = 7",
+        generator: generateSPLDV
+    },
+
+    {
+        id: 11,
+        title: "Pertidaksamaan",
+        icon: "≤",
+        description: "Menyelesaikan pertidaksamaan linear.",
+        formula: "ax + b > c",
+        example: "2x + 4 > 10 → x > 3",
+        generator: generateInequality
+    },
+
+    {
+        id: 12,
+        title: "Bangun Datar",
+        icon: "⬛",
+        description: "Luas dan keliling bangun datar.",
+        formula: "Persegi: L = s²",
+        example: "s = 5 → L = 25",
+        generator: generatePlane
+    },
+
+    {
+        id: 13,
+        title: "Pythagoras",
+        icon: "📐",
+        description: "Menentukan sisi segitiga siku-siku.",
+        formula: "a² + b² = c²",
+        example: "3² + 4² = 5²",
+        generator: generatePythagoras
+    },
+
+    {
+        id: 14,
+        title: "Lingkaran",
+        icon: "⭕",
+        description: "Luas dan keliling lingkaran.",
+        formula: "L = πr² dan K = 2πr",
+        example: "r = 7 → K = 44",
+        generator: generateCircle
+    },
+
+    {
+        id: 15,
+        title: "Bangun Ruang",
+        icon: "🧊",
+        description: "Menghitung volume berbagai bangun ruang.",
+        formula: "Kubus: V = s³",
+        example: "s = 4 → V = 64",
+        generator: generateSolid
+    },
+
+    {
+        id: 16,
+        title: "Statistika",
+        icon: "📊",
+        description: "Menghitung rata-rata dari sekumpulan data.",
+        formula: "Mean = jumlah data / banyak data",
+        example: "2,4,6 → mean = 4",
+        generator: generateStatistics
+    },
+
+    {
+        id: 17,
+        title: "Peluang",
+        icon: "🎲",
+        description: "Menghitung peluang suatu kejadian.",
+        formula: "P(A) = n(A) / n(S)",
+        example: "Peluang angka genap pada dadu = 3/6 = 1/2",
+        generator: generateProbability
+    },
+
+    {
+        id: 18,
+        title: "Barisan Aritmetika",
+        icon: "🔢",
+        description: "Menentukan suku ke-n barisan aritmetika.",
+        formula: "Un = a + (n−1)b",
+        example: "2,5,8,... → U4 = 11",
+        generator: generateArithmetic
+    },
+
+    {
+        id: 19,
+        title: "Barisan Geometri",
+        icon: "📈",
+        description: "Menentukan suku ke-n barisan geometri.",
+        formula: "Un = a × rⁿ⁻¹",
+        example: "2,4,8,... → U4 = 16",
+        generator: generateGeometric
+    },
+
+    {
+        id: 20,
+        title: "Jarak, Waktu & Kecepatan",
+        icon: "🚗",
+        description: "Menghitung hubungan jarak, waktu, dan kecepatan.",
+        formula: "v = s/t",
+        example: "120 km / 2 jam = 60 km/jam",
+        generator: generateSpeed
+    }
 
 ];
 
 
-/* =====================================================
-   START LEARNING
-===================================================== */
+/* ================= HELPER ================= */
 
-function startLearning() {
+function choiceMC(answer, distractors, seed) {
 
-    const name = document.getElementById("studentName").value.trim();
-    const classValue = document.getElementById("studentClass").value;
+    let values = [
+        String(answer),
+        ...distractors.map(String)
+    ];
 
-    if (!name || !classValue) {
-        alert("Silakan masukkan nama dan kelas terlebih dahulu.");
-        return;
+    values = [...new Set(values)];
+
+    while (values.length < 4) {
+        values.push(String(values.length + 1));
     }
 
-    student.name = name;
-    student.class = Number(classValue);
+    values = values.slice(0, 4);
+
+    const shift = seed % 4;
+
+    values = [
+        ...values.slice(shift),
+        ...values.slice(0, shift)
+    ];
+
+    return {
+        options: values,
+        correct: values.indexOf(String(answer))
+    };
+}
+
+
+function numericMC(answer, seed) {
+
+    return choiceMC(
+        answer,
+        [
+            answer - 2,
+            answer - 1,
+            answer + 1
+        ],
+        seed
+    );
+
+}
+
+
+function fraction(n, d) {
+
+    function gcd(a, b) {
+
+        a = Math.abs(a);
+        b = Math.abs(b);
+
+        while (b !== 0) {
+            let t = a % b;
+            a = b;
+            b = t;
+        }
+
+        return a;
+    }
+
+    const g = gcd(n, d);
+
+    n /= g;
+    d /= g;
+
+    if (d === 1) {
+        return String(n);
+    }
+
+    return `${n}/${d}`;
+}
+
+
+/* ================= QUESTION GENERATORS ================= */
+
+
+/* 1 OPERASI BILANGAN */
+
+function generateInteger(i) {
+
+    const type = (i - 1) % 4;
+
+    const a = 10 + i;
+    const b = 2 + (i % 7);
+
+    if (type === 0) {
+
+        const ans = a + b;
+
+        return {
+            question: `Hitung ${a} + ${b}.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Tuliskan operasi: ${a} + ${b}.`,
+                `Jumlahkan kedua bilangan.`,
+                `${a} + ${b} = ${ans}.`
+            ]
+        };
+
+    }
+
+    if (type === 1) {
+
+        const ans = a - b;
+
+        return {
+            question: `Hitung ${a} − ${b}.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Tuliskan operasi: ${a} − ${b}.`,
+                `Kurangkan ${b} dari ${a}.`,
+                `${a} − ${b} = ${ans}.`
+            ]
+        };
+
+    }
+
+    if (type === 2) {
+
+        const ans = a * b;
+
+        return {
+            question: `Hitung ${a} × ${b}.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Tuliskan operasi: ${a} × ${b}.`,
+                `Kalikan kedua bilangan.`,
+                `${a} × ${b} = ${ans}.`
+            ]
+        };
+
+    }
+
+    const divisor = 2 + (i % 5);
+    const dividend = divisor * (3 + (i % 6));
+    const ans = dividend / divisor;
+
+    return {
+        question: `Hitung ${dividend} ÷ ${divisor}.`,
+        ...numericMC(ans, i),
+        steps: [
+            `Tuliskan operasi: ${dividend} ÷ ${divisor}.`,
+            `Cari bilangan yang jika dikalikan ${divisor} menghasilkan ${dividend}.`,
+            `${dividend} ÷ ${divisor} = ${ans}.`
+        ]
+    };
+}
+
+
+/* 2 PECAHAN */
+
+function generateFraction(i) {
+
+    const d = 3 + (i % 5);
+
+    const a = 1 + ((i - 1) % (d - 1));
+    const b = 1 + (i % (d - 1));
+
+    const numerator = a + b;
+
+    const ans = fraction(numerator, d);
+
+    const options = choiceMC(
+        ans,
+        [
+            fraction(numerator - 1, d),
+            fraction(numerator + 1, d),
+            fraction(numerator + 2, d)
+        ],
+        i
+    );
+
+    return {
+        question: `Hitung ${a}/${d} + ${b}/${d}.`,
+        ...options,
+        steps: [
+            `Penyebut kedua pecahan sama, yaitu ${d}.`,
+            `Jumlahkan pembilang: ${a} + ${b} = ${numerator}.`,
+            `Hasilnya ${numerator}/${d}.`,
+            `Sederhanakan menjadi ${ans}.`
+        ]
+    };
+}
+
+
+/* 3 PERSENTASE */
+
+function generatePercent(i) {
+
+    const p = 10 + (i % 8) * 5;
+    const n = 100 + (i % 5) * 20;
+
+    const ans = p * n / 100;
+
+    return {
+        question: `Berapakah ${p}% dari ${n}?`,
+        ...numericMC(ans, i),
+        steps: [
+            `Ubah ${p}% menjadi ${p}/100.`,
+            `Kalikan ${p}/100 × ${n}.`,
+            `Hasilnya adalah ${ans}.`
+        ]
+    };
+}
+
+
+/* 4 PERBANDINGAN */
+
+function generateRatio(i) {
+
+    const a = 2 + (i % 4);
+    const b = 3 + (i % 3);
+    const multiplier = 2 + (i % 4);
+
+    const total = (a + b) * multiplier;
+    const ans = a * multiplier;
+
+    return {
+        question:
+            `Perbandingan siswa laki-laki dan perempuan adalah ${a}:${b}. Jika jumlah seluruh siswa ${total}, berapa siswa laki-laki?`,
+        ...numericMC(ans, i),
+        steps: [
+            `Jumlah bagian = ${a} + ${b} = ${a + b}.`,
+            `Setiap bagian bernilai ${total} ÷ ${a + b} = ${multiplier}.`,
+            `Siswa laki-laki = ${a} × ${multiplier}.`,
+            `Jadi jumlah siswa laki-laki = ${ans}.`
+        ]
+    };
+}
+
+
+/* 5 FPB KPK */
+
+function generateGcdLcm(i) {
+
+    const pairs = [
+        [12,18],
+        [15,20],
+        [16,24],
+        [18,30],
+        [21,28],
+        [24,36],
+        [25,35],
+        [27,36],
+        [30,45],
+        [32,48]
+    ];
+
+    const pair = pairs[(i - 1) % pairs.length];
+
+    const a = pair[0];
+    const b = pair[1];
+
+    function gcd(x,y) {
+        while (y) {
+            [x,y] = [y,x % y];
+        }
+        return x;
+    }
+
+    const g = gcd(a,b);
+    const l = Math.abs(a*b)/g;
+
+    const askFPB = i % 2 === 1;
+    const ans = askFPB ? g : l;
+
+    return {
+        question: `${askFPB ? "Tentukan FPB" : "Tentukan KPK"} dari ${a} dan ${b}.`,
+        ...numericMC(ans, i),
+        steps: askFPB
+            ? [
+                `Faktor ${a} dan ${b}.`,
+                `Faktor persekutuan terbesar keduanya adalah ${g}.`,
+                `Jadi FPB(${a}, ${b}) = ${g}.`
+            ]
+            : [
+                `Gunakan hubungan KPK × FPB = ${a} × ${b}.`,
+                `KPK = (${a} × ${b}) ÷ ${g}.`,
+                `KPK = ${l}.`
+            ]
+    };
+}
+
+
+/* 6 PANGKAT */
+
+function generatePower(i) {
+
+    const base = 2 + (i % 4);
+    const exponent = 2 + (i % 3);
+
+    const ans = Math.pow(base, exponent);
+
+    return {
+        question: `Hitung ${base}^${exponent}.`,
+        ...numericMC(ans, i),
+        steps: [
+            `${base}^${exponent} berarti ${base} dikalikan sebanyak ${exponent} kali.`,
+            `Hasil perkalian tersebut adalah ${ans}.`
+        ]
+    };
+}
+
+
+/* 7 AKAR */
+
+function generateRoot(i) {
+
+    const n = 2 + (i % 12);
+    const value = n * n;
+
+    return {
+        question: `Tentukan nilai √${value}.`,
+        ...numericMC(n, i),
+        steps: [
+            `Cari bilangan yang jika dikuadratkan menghasilkan ${value}.`,
+            `${n} × ${n} = ${value}.`,
+            `Jadi √${value} = ${n}.`
+        ]
+    };
+}
+
+
+/* 8 ALJABAR */
+
+function generateAlgebra(i) {
+
+    const a = 2 + (i % 5);
+    const b = 3 + (i % 7);
+    const x = 2 + (i % 6);
+
+    const ans = a*x + b;
+
+    return {
+        question: `Jika x = ${x}, tentukan nilai ${a}x + ${b}.`,
+        ...numericMC(ans, i),
+        steps: [
+            `Substitusikan x = ${x}.`,
+            `${a}(${x}) + ${b}.`,
+            `${a*x} + ${b} = ${ans}.`
+        ]
+    };
+}
+
+
+/* 9 PERSAMAAN LINEAR */
+
+function generateLinear(i) {
+
+    const a = 2 + (i % 5);
+    const x = 2 + (i % 7);
+    const b = 3 + (i % 6);
+
+    const c = a*x + b;
+
+    return {
+        question: `Tentukan x dari persamaan ${a}x + ${b} = ${c}.`,
+        ...numericMC(x, i),
+        steps: [
+            `Kurangkan ${b} pada kedua ruas.`,
+            `${a}x = ${c} − ${b} = ${a*x}.`,
+            `Bagi kedua ruas dengan ${a}.`,
+            `x = ${x}.`
+        ]
+    };
+}
+
+
+/* 10 SPLDV */
+
+function generateSPLDV(i) {
+
+    const x = 2 + (i % 5);
+    const y = 1 + (i % 6);
+
+    const a1 = 1;
+    const b1 = 1;
+    const c1 = x + y;
+
+    const a2 = 2;
+    const b2 = 1;
+    const c2 = 2*x + y;
+
+    const ans = `(${x}, ${y})`;
+
+    return {
+        question:
+            `Tentukan pasangan (x,y) dari:
+             x + y = ${c1}
+             2x + y = ${c2}`,
+        ...choiceMC(
+            ans,
+            [
+                `(${x+1}, ${y})`,
+                `(${x}, ${y+1})`,
+                `(${y}, ${x})`
+            ],
+            i
+        ),
+        steps: [
+            `Persamaan 1: x + y = ${c1}.`,
+            `Persamaan 2: 2x + y = ${c2}.`,
+            `Kurangkan persamaan 1 dari persamaan 2.`,
+            `x = ${c2} − ${c1} = ${x}.`,
+            `Substitusikan x ke persamaan pertama.`,
+            `y = ${y}.`,
+            `Jadi pasangan penyelesaiannya adalah ${ans}.`
+        ]
+    };
+}
+
+
+/* 11 PERTIDAKSAMAAN */
+
+function generateInequality(i) {
+
+    const a = 2 + (i % 5);
+    const x = 2 + (i % 7);
+    const b = 3 + (i % 5);
+    const c = a*x + b;
+
+    const ans = `x > ${x}`;
+
+    return {
+        question: `Tentukan penyelesaian ${a}x + ${b} > ${c}.`,
+        ...choiceMC(
+            ans,
+            [
+                `x > ${x+1}`,
+                `x < ${x}`,
+                `x > ${x-1}`
+            ],
+            i
+        ),
+        steps: [
+            `Kurangkan ${b} pada kedua ruas.`,
+            `${a}x > ${c-b}.`,
+            `${a}x > ${a*x}.`,
+            `Bagi dengan ${a}.`,
+            `x > ${x}.`
+        ]
+    };
+}
+
+
+/* 12 BANGUN DATAR */
+
+function generatePlane(i) {
+
+    const type = (i - 1) % 3;
+
+    if (type === 0) {
+
+        const s = 3 + (i % 8);
+        const ans = s*s;
+
+        return {
+            question: `Hitung luas persegi dengan sisi ${s} cm.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Rumus luas persegi: L = s².`,
+                `L = ${s}².`,
+                `L = ${ans} cm².`
+            ]
+        };
+    }
+
+    if (type === 1) {
+
+        const p = 5 + (i % 8);
+        const l = 3 + (i % 5);
+        const ans = p*l;
+
+        return {
+            question: `Hitung luas persegi panjang dengan panjang ${p} cm dan lebar ${l} cm.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Rumus: L = p × l.`,
+                `L = ${p} × ${l}.`,
+                `L = ${ans} cm².`
+            ]
+        };
+    }
+
+    const alas = 6 + (i % 8) * 2;
+    const tinggi = 4 + (i % 5) * 2;
+    const ans = alas*tinggi/2;
+
+    return {
+        question: `Hitung luas segitiga dengan alas ${alas} cm dan tinggi ${tinggi} cm.`,
+        ...numericMC(ans, i),
+        steps: [
+            `Rumus: L = ½ × alas × tinggi.`,
+            `L = ½ × ${alas} × ${tinggi}.`,
+            `L = ${ans} cm².`
+        ]
+    };
+}
+
+
+/* 13 PYTHAGORAS */
+
+function generatePythagoras(i) {
+
+    const triples = [
+        [3,4,5],
+        [5,12,13],
+        [6,8,10],
+        [8,15,17],
+        [7,24,25]
+    ];
+
+    const [a,b,c] = triples[(i-1)%triples.length];
+
+    if (i % 2 === 1) {
+
+        return {
+            question: `Sebuah segitiga siku-siku memiliki sisi ${a} cm dan ${b} cm. Berapa sisi miringnya?`,
+            ...numericMC(c, i),
+            steps: [
+                `Gunakan rumus a² + b² = c².`,
+                `${a}² + ${b}² = c².`,
+                `${a*a} + ${b*b} = ${c*c}.`,
+                `c = ${c} cm.`
+            ]
+        };
+
+    }
+
+    return {
+        question: `Sisi miring segitiga adalah ${c} cm dan salah satu sisi siku-sikunya ${a} cm. Tentukan sisi lainnya.`,
+        ...numericMC(b, i),
+        steps: [
+            `Gunakan b² = c² − a².`,
+            `b² = ${c}² − ${a}².`,
+            `b² = ${c*c} − ${a*a}.`,
+            `b² = ${b*b}.`,
+            `b = ${b} cm.`
+        ]
+    };
+}
+
+
+/* 14 LINGKARAN */
+
+function generateCircle(i) {
+
+    const r = 7 * (1 + (i % 4));
+
+    if (i % 2 === 1) {
+
+        const ans = 22/7 * r*r;
+
+        return {
+            question: `Hitung luas lingkaran dengan jari-jari ${r} cm. Gunakan π = 22/7.`,
+            ...numericMC(ans, i),
+            steps: [
+                `Rumus luas lingkaran: L = πr².`,
+                `L = 22/7 × ${r}².`,
+                `L = ${ans} cm².`
+            ]
+        };
+
+    }
+
+    const ans = 2 * 22/7 * r;
+
+    return {
+        question: `Hitung keliling lingkaran dengan jari-jari ${r} cm. Gunakan π = 22/7.`,
+        ...numericMC(ans, i),
+        steps: [
+            `Rumus keliling: K = 2πr.`,
+            `K = 2 × 22/7 × ${r}.`,
+            `K = ${ans} cm.`
+        ]
+    };
+}
+
+
+/* 15 BANGUN RUANG */
+
+function generateSolid(i) {
+
+    const type = (i-1)%3;
+
+    if (type === 0) {
+
+        const s = 3 + (i%6);
+        const ans = s*s*s;
+
+        return {
+            question: `Hitung volume kubus dengan sisi ${s} cm.`,
+            ...numericMC(ans,i),
+            steps: [
+                `Rumus volume kubus: V = s³.`,
+                `V = ${s}³.`,
+                `V = ${ans} cm³.`
+            ]
+        };
+    }
+
+    if (type === 1) {
+
+        const p = 4 + (i%5);
+        const l = 3 + (i%4);
+        const t = 2 + (i%4);
+
+        const ans = p*l*t;
+
+        return {
+            question:
+                `Hitung volume balok dengan panjang ${p} cm, lebar ${l} cm, dan tinggi ${t} cm.`,
+            ...numericMC(ans,i),
+            steps: [
+                `Rumus V = p × l × t.`,
+                `V = ${p} × ${l} × ${t}.`,
+                `V = ${ans} cm³.`
+            ]
+        };
+    }
+
+    const r = 7;
+    const h = 2 + (i%5);
+    const ans = 22/7*r*r*h;
+
+    return {
+        question:
+            `Hitung volume tabung dengan r = ${r} cm dan tinggi ${h} cm. Gunakan π = 22/7.`,
+        ...numericMC(ans,i),
+        steps: [
+            `Rumus V = πr²t.`,
+            `V = 22/7 × ${r}² × ${h}.`,
+            `V = ${ans} cm³.`
+        ]
+    };
+}
+
+
+/* 16 STATISTIKA */
+
+function generateStatistics(i) {
+
+    const base = 5 + i;
+
+    const data = [
+        base,
+        base + 2,
+        base - 1,
+        base + 3,
+        base + 1
+    ];
+
+    const sum = data.reduce((a,b)=>a+b,0);
+    const ans = sum/data.length;
+
+    return {
+        question: `Tentukan mean dari data: ${data.join(", ")}.`,
+        ...numericMC(ans,i),
+        steps: [
+            `Jumlahkan semua data.`,
+            `${data.join(" + ")} = ${sum}.`,
+            `Banyak data = ${data.length}.`,
+            `Mean = ${sum} ÷ ${data.length} = ${ans}.`
+        ]
+    };
+}
+
+
+/* 17 PELUANG */
+
+function generateProbability(i) {
+
+    const favorable = 1 + (i%4);
+    const total = favorable * (2 + (i%3));
+
+    const ans = fraction(favorable,total);
+
+    return {
+        question:
+            `Jika terdapat ${total} kemungkinan hasil dan ${favorable} hasil yang diinginkan, berapakah peluangnya?`,
+        ...choiceMC(
+            ans,
+            [
+                fraction(favorable+1,total),
+                fraction(favorable,total+1),
+                fraction(total-favorable,total)
+            ],
+            i
+        ),
+        steps: [
+            `Gunakan rumus P(A) = banyak kejadian yang diinginkan / banyak seluruh kejadian.`,
+            `P(A) = ${favorable}/${total}.`,
+            `Sederhanakan pecahan tersebut.`,
+            `P(A) = ${ans}.`
+        ]
+    };
+}
+
+
+/* 18 BARISAN ARITMETIKA */
+
+function generateArithmetic(i) {
+
+    const a = 2 + (i%5);
+    const d = 2 + (i%4);
+    const n = 3 + (i%8);
+
+    const ans = a + (n-1)*d;
+
+    return {
+        question:
+            `Tentukan suku ke-${n} dari barisan dengan suku pertama ${a} dan beda ${d}.`,
+        ...numericMC(ans,i),
+        steps: [
+            `Gunakan Un = a + (n−1)d.`,
+            `Un = ${a} + (${n}−1) × ${d}.`,
+            `Un = ${a} + ${(n-1)*d}.`,
+            `Un = ${ans}.`
+        ]
+    };
+}
+
+
+/* 19 BARISAN GEOMETRI */
+
+function generateGeometric(i) {
+
+    const a = 2 + (i%4);
+    const r = 2 + (i%3);
+    const n = 2 + (i%6);
+
+    const ans = a * Math.pow(r,n-1);
+
+    return {
+        question:
+            `Tentukan suku ke-${n} dari barisan geometri dengan a = ${a} dan rasio ${r}.`,
+        ...numericMC(ans,i),
+        steps: [
+            `Gunakan Un = a × rⁿ⁻¹.`,
+            `Un = ${a} × ${r}^${n-1}.`,
+            `Un = ${ans}.`
+        ]
+    };
+}
+
+
+/* 20 JARAK WAKTU KECEPATAN */
+
+function generateSpeed(i) {
+
+    const type = (i-1)%3;
+
+    if (type === 0) {
+
+        const v = 40 + (i%5)*10;
+        const t = 2 + (i%4);
+        const ans = v*t;
+
+        return {
+            question: `Sebuah kendaraan bergerak dengan kecepatan ${v} km/jam selama ${t} jam. Berapa jaraknya?`,
+            ...numericMC(ans,i),
+            steps: [
+                `Gunakan s = v × t.`,
+                `s = ${v} × ${t}.`,
+                `s = ${ans} km.`
+            ]
+        };
+    }
+
+    if (type === 1) {
+
+        const t = 2 + (i%4);
+        const v = 50 + (i%4)*10;
+        const s = v*t;
+
+        return {
+            question: `Sebuah kendaraan menempuh ${s} km dalam ${t} jam. Berapa kecepatannya?`,
+            ...numericMC(v,i),
+            steps: [
+                `Gunakan v = s/t.`,
+                `v = ${s} ÷ ${t}.`,
+                `v = ${v} km/jam.`
+            ]
+        };
+    }
+
+    const v = 40 + (i%4)*10;
+    const t = 2 + (i%4);
+    const s = v*t;
+
+    return {
+        question: `Sebuah kendaraan menempuh ${s} km dengan kecepatan ${v} km/jam. Berapa waktunya?`,
+        ...numericMC(t,i),
+        steps: [
+            `Gunakan t = s/v.`,
+            `t = ${s} ÷ ${v}.`,
+            `t = ${t} jam.`
+        ]
+    };
+}
+
+
+/* ================= GENERATE 400 SOAL ================= */
+
+topics.forEach(topic => {
+
+    topic.questions = [];
+
+    for (let i = 1; i <= 20; i++) {
+        topic.questions.push(topic.generator(i));
+    }
+
+});
+
+
+/* ================= STATE ================= */
+
+const STORAGE_KEY = "mathlearn_3_progress";
+
+let progress =
+    JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+topics.forEach(topic => {
+
+    if (!progress[topic.id]) {
+
+        progress[topic.id] = {
+            answered: [],
+            correct: []
+        };
+
+    }
+
+});
+
+
+function saveProgress() {
 
     localStorage.setItem(
-        "mathLearnStudent",
-        JSON.stringify(student)
+        STORAGE_KEY,
+        JSON.stringify(progress)
     );
 
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    updateStudentUI();
-    updateDashboard();
-    loadMaterials();
-
-    showPage("dashboardPage");
 }
 
 
-/* =====================================================
-   LOAD STUDENT
-===================================================== */
+/* ================= USER ================= */
 
-function loadStudent() {
+let userName =
+    localStorage.getItem("mathlearn_name") || "Pelajar";
 
-    const saved = localStorage.getItem("mathLearnStudent");
+function updateUser() {
 
-    if (!saved) return;
+    document.getElementById("topName").textContent = userName;
 
-    student = JSON.parse(saved);
+    document.getElementById("topClass").textContent =
+        "Siswa SMA";
 
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    updateStudentUI();
-    updateDashboard();
-    loadMaterials();
 }
 
-
-/* =====================================================
-   UPDATE STUDENT UI
-===================================================== */
-
-function updateStudentUI() {
-
-    document.getElementById("sideName").textContent =
-        student.name;
-
-    document.getElementById("sideClass").textContent =
-        "Kelas " + student.class;
-
-    document.getElementById("topName").textContent =
-        student.name;
-
-    const initial =
-        student.name.charAt(0).toUpperCase();
-
-    document.getElementById("avatar").textContent =
-        initial;
-
-    document.getElementById("topAvatar").textContent =
-        initial;
-
-    document.getElementById("welcomeText").textContent =
-        `Selamat datang, ${student.name}!`;
-}
+updateUser();
 
 
-/* =====================================================
-   NAVIGATION
-===================================================== */
+document.getElementById("profileBtn").addEventListener("click", () => {
 
-function showPage(pageId) {
-
-    document.querySelectorAll(".page").forEach(page => {
-        page.classList.add("hidden");
-    });
-
-    document.getElementById(pageId).classList.remove("hidden");
-
-    const titles = {
-        dashboardPage: "Dashboard",
-        materiPage: "Materi",
-        latihanPage: "Latihan",
-        kuisPage: "Kuis",
-        ujianPage: "Ujian",
-        bankPage: "Bank Soal",
-        riwayatPage: "Riwayat Nilai"
-    };
-
-    document.getElementById("pageTitle").textContent =
-        titles[pageId] || "Math Learn";
-
-    if (pageId === "riwayatPage") {
-        loadHistory();
-    }
-}
-
-
-/* =====================================================
-   MATERIAL
-===================================================== */
-
-function loadMaterials() {
-
-    const container =
-        document.getElementById("materiContainer");
-
-    const materials = {
-
-        10: [
-            ["⚡", "Eksponen & Logaritma", "Sifat eksponen, persamaan eksponen, logaritma."],
-            ["🔢", "Persamaan Kuadrat", "Akar, diskriminan, hubungan akar."],
-            ["📈", "Fungsi", "Domain, range, komposisi, invers."],
-            ["📐", "Trigonometri", "Identitas, persamaan, sudut ganda."],
-            ["🧮", "Sistem Persamaan", "SPLDV dan SPLTV."]
-        ],
-
-        11: [
-            ["🔢", "Barisan & Deret", "Aritmetika dan geometri."],
-            ["🔗", "Fungsi Komposisi", "Komposisi dan invers fungsi."],
-            ["▦", "Matriks", "Operasi dan persamaan matriks."],
-            ["∞", "Limit", "Limit aljabar dan bentuk tak tentu."],
-            ["📈", "Turunan", "Turunan dan aplikasi."]
-        ],
-
-        12: [
-            ["∫", "Integral", "Integral tak tentu dan tentu."],
-            ["📐", "Aplikasi Integral", "Luas daerah dan dua kurva."],
-            ["📈", "Turunan Lanjutan", "Optimasi dan titik stasioner."],
-            ["🎲", "Peluang", "Kombinasi dan peluang."],
-            ["🧠", "HOTS", "Masalah matematika terpadu."]
-        ]
-
-    };
-
-    const data = materials[student.class] || [];
-
-    container.innerHTML = data.map(item => `
-        <div class="materi-card">
-            <div class="materi-icon">${item[0]}</div>
-            <h3>${item[1]}</h3>
-            <p>${item[2]}</p>
-        </div>
-    `).join("");
-}
-
-
-/* =====================================================
-   FILTER SOAL
-===================================================== */
-
-function getQuestionsByClass(classNumber) {
-
-    return questionBank.filter(
-        q => q.class === Number(classNumber)
+    const name = prompt(
+        "Masukkan nama kamu:",
+        userName
     );
-}
 
+    if (name && name.trim()) {
 
-/* =====================================================
-   RANDOMIZE
-===================================================== */
+        userName = name.trim();
 
-function shuffle(array) {
+        localStorage.setItem(
+            "mathlearn_name",
+            userName
+        );
 
-    const result = [...array];
+        updateUser();
 
-    for (let i = result.length - 1; i > 0; i--) {
-
-        const j =
-            Math.floor(Math.random() * (i + 1));
-
-        [result[i], result[j]] =
-            [result[j], result[i]];
     }
 
-    return result;
-}
+});
 
 
-/* =====================================================
-   CREATE PRACTICE
-===================================================== */
+/* ================= NAVIGATION ================= */
 
-function createPracticeQuestions() {
+function openPage(pageId) {
 
-    const questions =
-        getQuestionsByClass(student.class);
+    document.querySelectorAll(".page")
+        .forEach(page => page.classList.remove("active"));
 
-    const easy =
-        questions.filter(q => q.difficulty === "mudah");
+    document.getElementById(pageId)
+        .classList.add("active");
 
-    const medium =
-        questions.filter(q => q.difficulty === "menengah");
+    document.querySelectorAll(".nav-btn")
+        .forEach(btn => {
 
-    const hard =
-        questions.filter(q => q.difficulty === "sulit");
-
-    const hots =
-        questions.filter(q => q.difficulty === "hots");
-
-    let selected = [];
-
-    selected.push(...shuffle(easy).slice(0, 2));
-    selected.push(...shuffle(medium).slice(0, 3));
-    selected.push(...shuffle(hard).slice(0, 3));
-    selected.push(...shuffle(hots).slice(0, 2));
-
-    /*
-       Jika bank soal masih sedikit,
-       ambil soal tambahan.
-    */
-
-    if (selected.length < 10) {
-
-        const remaining =
-            questions.filter(q =>
-                !selected.includes(q)
+            btn.classList.toggle(
+                "active",
+                btn.dataset.page === pageId
             );
 
-        selected.push(
-            ...shuffle(remaining)
-                .slice(0, 10 - selected.length)
-        );
+        });
+
+    if (pageId === "dashboard") {
+        updateDashboard();
     }
 
-    return shuffle(selected).slice(0, 10);
-}
-
-
-/* =====================================================
-   START PRACTICE
-===================================================== */
-
-function startPractice() {
-
-    quizMode = "practice";
-
-    currentQuestions =
-        createPracticeQuestions();
-
-    currentQuestionIndex = 0;
-
-    userAnswers =
-        new Array(currentQuestions.length).fill(null);
-
-    showPage("latihanPage");
-
-    renderQuestion();
-}
-
-
-/* =====================================================
-   ADVANCED QUIZ
-===================================================== */
-
-function startAdvancedQuiz() {
-
-    quizMode = "advanced";
-
-    const questions =
-        getQuestionsByClass(student.class);
-
-    const medium =
-        questions.filter(q => q.difficulty === "menengah");
-
-    const hard =
-        questions.filter(q => q.difficulty === "sulit");
-
-    const hots =
-        questions.filter(q => q.difficulty === "hots");
-
-    let selected = [];
-
-    selected.push(...shuffle(medium).slice(0, 1));
-    selected.push(...shuffle(hard).slice(0, 4));
-    selected.push(...shuffle(hots).slice(0, 5));
-
-    if (selected.length < 10) {
-
-        selected.push(
-            ...shuffle(questions)
-                .slice(0, 10 - selected.length)
-        );
+    if (pageId === "progress") {
+        updateProgressPage();
     }
 
-    currentQuestions =
-        shuffle(selected).slice(0, 10);
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 
-    currentQuestionIndex = 0;
-
-    userAnswers =
-        new Array(currentQuestions.length).fill(null);
-
-    showPage("latihanPage");
-
-    renderQuestion();
 }
 
 
-/* =====================================================
-   RENDER QUESTION
-===================================================== */
+document.querySelectorAll(".nav-btn")
+    .forEach(btn => {
 
-function renderQuestion() {
+        btn.addEventListener("click", () => {
 
-    const q =
-        currentQuestions[currentQuestionIndex];
+            openPage(btn.dataset.page);
 
-    if (!q) {
-        finishQuiz();
-        return;
-    }
+            document.getElementById("sidebar")
+                .classList.remove("open");
 
-    document.getElementById("questionCounter").textContent =
-        `${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+        });
 
-    const difficultyText = {
-        mudah: "Mudah",
-        menengah: "Menengah",
-        sulit: "Sulit",
-        hots: "HOTS"
-    };
-
-    const difficultyClass = {
-        mudah: "easy",
-        menengah: "medium",
-        sulit: "hard",
-        hots: "hots"
-    };
-
-    const previousAnswer =
-        userAnswers[currentQuestionIndex];
-
-    document.getElementById("quizContainer").innerHTML = `
-
-        <div class="question-card">
-
-            <div class="question-meta">
-
-                <span class="difficulty ${difficultyClass[q.difficulty]}">
-                    ${difficultyText[q.difficulty]}
-                </span>
-
-                <span class="difficulty">
-                    ${q.topic}
-                </span>
-
-                ${
-                    quizMode === "exam"
-                    ? `<span class="timer" id="timer">⏱️ ${formatTime(remainingSeconds)}</span>`
-                    : ""
-                }
-
-            </div>
-
-            <div class="question-text">
-                ${q.question}
-            </div>
-
-            <div class="options">
-
-                ${q.options.map((option, index) => `
-
-                    <label class="option">
-
-                        <input
-                            type="radio"
-                            name="answer"
-                            value="${index}"
-                            ${previousAnswer === index ? "checked" : ""}
-                            onchange="saveAnswer(${index})"
-                        >
-
-                        ${String.fromCharCode(65 + index)}.
-                        ${option}
-
-                    </label>
-
-                `).join("")}
-
-            </div>
+    });
 
 
-            <div class="quiz-navigation">
+/* ================= DASHBOARD ================= */
 
-                <button
-                    class="secondary-btn"
-                    onclick="previousQuestion()"
-                    ${currentQuestionIndex === 0 ? "disabled" : ""}
-                >
-                    ← Sebelumnya
-                </button>
+function calculateStats() {
 
-
-                ${
-                    currentQuestionIndex === currentQuestions.length - 1
-
-                    ? `<button
-                            class="primary-btn"
-                            onclick="finishQuiz()">
-                            Selesai
-                       </button>`
-
-                    : `<button
-                            class="primary-btn"
-                            onclick="nextQuestion()">
-                            Selanjutnya →
-                       </button>`
-                }
-
-            </div>
-
-        </div>
-    `;
-}
-
-
-/* =====================================================
-   SAVE ANSWER
-===================================================== */
-
-function saveAnswer(index) {
-
-    userAnswers[currentQuestionIndex] =
-        Number(index);
-}
-
-
-/* =====================================================
-   NEXT
-===================================================== */
-
-function nextQuestion() {
-
-    currentQuestionIndex++;
-
-    renderQuestion();
-}
-
-
-/* =====================================================
-   PREVIOUS
-===================================================== */
-
-function previousQuestion() {
-
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderQuestion();
-    }
-}
-
-
-/* =====================================================
-   FINISH QUIZ
-===================================================== */
-
-function finishQuiz() {
-
-    if (examTimer) {
-
-        clearInterval(examTimer);
-
-        examTimer = null;
-    }
-
-    let totalPoints = 0;
-    let earnedPoints = 0;
+    let answered = 0;
     let correct = 0;
 
-    currentQuestions.forEach((q, index) => {
+    topics.forEach(topic => {
 
-        totalPoints += q.points || 10;
+        answered += progress[topic.id].answered.length;
 
-        if (userAnswers[index] === q.answer) {
-
-            correct++;
-
-            earnedPoints += q.points || 10;
-        }
+        correct += progress[topic.id].correct.length;
 
     });
 
-    const wrong =
-        currentQuestions.length - correct;
-
-    const score =
-        Math.round(
-            (earnedPoints / totalPoints) * 100
-        );
-
-    saveHistory({
-        date: new Date().toLocaleString("id-ID"),
-        mode: quizMode,
-        score,
+    return {
+        answered,
         correct,
-        wrong,
-        total: currentQuestions.length
-    });
+        accuracy:
+            answered === 0
+                ? 0
+                : Math.round(correct / answered * 100)
+    };
 
-    showResult(score, correct, wrong);
 }
 
 
-/* =====================================================
-   SHOW RESULT
-===================================================== */
+function updateDashboard() {
 
-function showResult(score, correct, wrong) {
+    const stats = calculateStats();
 
-    document.getElementById("quizContainer").innerHTML = `
+    document.getElementById("statMaterials")
+        .textContent = topics.length;
 
-        <div class="result-card">
+    document.getElementById("statAnswered")
+        .textContent = stats.answered;
 
-            <span class="badge orange">
-                HASIL SELESAI
-            </span>
+    document.getElementById("statCorrect")
+        .textContent = stats.correct;
 
-            <h1>Hasil ${quizMode === "exam" ? "Ujian" : "Latihan"}</h1>
+    document.getElementById("statAccuracy")
+        .textContent = stats.accuracy + "%";
 
-            <div class="result-score">
-                ${score}
-            </div>
 
-            <p>Nilai akhir</p>
-
-
-            <div class="result-grid">
-
-                <div class="result-box">
-                    <strong>${correct}</strong>
-                    Benar
-                </div>
-
-                <div class="result-box">
-                    <strong>${wrong}</strong>
-                    Salah
-                </div>
-
-                <div class="result-box">
-                    <strong>${currentQuestions.length}</strong>
-                    Total
-                </div>
-
-            </div>
-
-
-            <button
-                class="primary-btn"
-                onclick="showReview()">
-                Lihat Pembahasan
-            </button>
-
-            <button
-                class="secondary-btn"
-                onclick="startPractice()">
-                Coba Lagi
-            </button>
-
-        </div>
-    `;
-}
-
-
-/* =====================================================
-   REVIEW
-===================================================== */
-
-function showReview() {
-
-    let html = `
-        <div class="result-card">
-
-            <h1>Pembahasan Soal</h1>
-
-            <div class="review-list">
-    `;
-
-    currentQuestions.forEach((q, index) => {
-
-        const correct =
-            userAnswers[index] === q.answer;
-
-        html += `
-
-            <div class="review-item ${correct ? "correct" : "wrong"}">
-
-                <strong>
-                    Soal ${index + 1}
-                    ${correct ? "✅" : "❌"}
-                </strong>
-
-                <p>
-                    ${q.question}
-                </p>
-
-                <p>
-                    Jawaban benar:
-                    <strong>
-                        ${String.fromCharCode(65 + q.answer)}
-                    </strong>
-                </p>
-
-                ${
-                    !correct
-                    ? `<p>
-                        Jawaban kamu:
-                        ${
-                            userAnswers[index] !== null
-                            ? String.fromCharCode(
-                                65 + userAnswers[index]
-                              )
-                            : "Tidak dijawab"
-                        }
-                       </p>`
-                    : ""
-                }
-
-                <button onclick="openExplanation(${index})">
-                    📖 Lihat Pembahasan
-                </button>
-
-            </div>
-        `;
-    });
-
-    html += `
-            </div>
-
-            <button
-                class="primary-btn"
-                onclick="showPage('dashboardPage')">
-                Kembali ke Dashboard
-            </button>
-
-        </div>
-    `;
-
-    document.getElementById("quizContainer").innerHTML = html;
-}
-
-
-/* =====================================================
-   EXPLANATION MODAL
-===================================================== */
-
-function openExplanation(index) {
-
-    const q =
-        currentQuestions[index];
-
-    document.getElementById(
-        "explanationContent"
-    ).innerHTML = `
-
-        <p>
-            <strong>${q.question}</strong>
-        </p>
-
-        <p>
-            Jawaban benar:
-            <strong>
-                ${String.fromCharCode(65 + q.answer)}
-            </strong>
-        </p>
-
-        ${q.explanation}
-    `;
-
-    document
-        .getElementById("explanationModal")
-        .classList.remove("hidden");
-}
-
-
-function closeExplanation() {
-
-    document
-        .getElementById("explanationModal")
-        .classList.add("hidden");
-}
-
-
-/* =====================================================
-   EXAM
-===================================================== */
-
-function startExam() {
-
-    quizMode = "exam";
-
-    const amount =
-        Number(
-            document.getElementById("examAmount").value
-        );
-
-    const minutes =
-        Number(
-            document.getElementById("examTime").value
-        );
-
-    const questions =
-        getQuestionsByClass(student.class);
-
-    currentQuestions =
-        shuffle(questions).slice(
-            0,
-            Math.min(amount, questions.length)
-        );
-
-    currentQuestionIndex = 0;
-
-    userAnswers =
-        new Array(currentQuestions.length).fill(null);
-
-    remainingSeconds =
-        minutes * 60;
-
-    showPage("latihanPage");
-
-    startTimer();
-
-    renderQuestion();
-}
-
-
-/* =====================================================
-   TIMER
-===================================================== */
-
-function startTimer() {
-
-    if (examTimer) {
-        clearInterval(examTimer);
-    }
-
-    examTimer = setInterval(() => {
-
-        remainingSeconds--;
-
-        const timer =
-            document.getElementById("timer");
-
-        if (timer) {
-
-            timer.textContent =
-                `⏱️ ${formatTime(remainingSeconds)}`;
-        }
-
-        if (remainingSeconds <= 0) {
-
-            clearInterval(examTimer);
-
-            examTimer = null;
-
-            alert("Waktu ujian telah habis.");
-
-            finishQuiz();
-        }
-
-    }, 1000);
-}
-
-
-function formatTime(seconds) {
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const secs =
-        seconds % 60;
-
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-}
-
-
-/* =====================================================
-   GENERATOR SOAL
-===================================================== */
-
-function generateQuestion() {
-
-    const classNumber =
-        Number(
-            document.getElementById("generatorClass").value
-        );
-
-    const topic =
-        document.getElementById("generatorTopic").value;
-
-    const difficulty =
-        document.getElementById("generatorDifficulty").value;
-
-    let candidates =
-        questionBank.filter(q =>
-            q.class === classNumber &&
-            q.difficulty === difficulty
-        );
-
-    if (topic !== "all") {
-
-        candidates =
-            candidates.filter(
-                q => q.topic === topic
-            );
-    }
-
-    /*
-       Jika tidak ada soal yang cocok,
-       buat dari bank kelas.
-    */
-
-    if (candidates.length === 0) {
-
-        candidates =
-            questionBank.filter(
-                q => q.class === classNumber
-            );
-    }
-
-    if (candidates.length === 0) {
-
-        document.getElementById(
-            "generatedQuestion"
-        ).innerHTML = `
-            <div class="generated-card">
-                <h2>Soal belum tersedia</h2>
-                <p>
-                    Tambahkan template soal untuk
-                    kombinasi kelas dan materi tersebut.
-                </p>
-            </div>
-        `;
-
-        return;
-    }
-
-    const q =
-        candidates[
-            Math.floor(
-                Math.random() * candidates.length
-            )
-        ];
-
-    document.getElementById(
-        "generatedQuestion"
-    ).innerHTML = `
-
-        <div class="generated-card">
-
-            <span class="difficulty ${difficulty === "mudah" ? "easy" :
-                difficulty === "menengah" ? "medium" :
-                difficulty === "sulit" ? "hard" : "hots"}">
-                ${difficulty.toUpperCase()}
-            </span>
-
-            <h2>Soal ${q.id}</h2>
-
-            <p class="question-text">
-                ${q.question}
-            </p>
-
-            ${q.options.map((option, index) => `
-                <div class="option">
-                    <strong>
-                        ${String.fromCharCode(65 + index)}.
-                    </strong>
-                    ${option}
-                </div>
-            `).join("")}
-
-            <button
-                class="secondary-btn"
-                onclick='showGeneratedExplanation(${JSON.stringify(q.id)})'>
-                📖 Lihat Pembahasan
-            </button>
-
-        </div>
-    `;
-}
-
-
-function showGeneratedExplanation(id) {
-
-    const q =
-        questionBank.find(
-            question => question.id === id
-        );
-
-    if (!q) return;
-
-    document.getElementById(
-        "explanationContent"
-    ).innerHTML = `
-
-        <p>
-            <strong>${q.question}</strong>
-        </p>
-
-        <p>
-            Jawaban:
-            <strong>
-                ${String.fromCharCode(65 + q.answer)}
-            </strong>
-        </p>
-
-        ${q.explanation}
-    `;
-
-    document
-        .getElementById("explanationModal")
-        .classList.remove("hidden");
-}
-
-
-/* =====================================================
-   HISTORY
-===================================================== */
-
-function saveHistory(result) {
-
-    const key =
-        "mathLearnHistory_" + student.name;
-
-    const history =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-    history.unshift(result);
-
-    localStorage.setItem(
-        key,
-        JSON.stringify(history)
+    let recommended = topics.find(topic =>
+        progress[topic.id].answered.length < 20
     );
 
-    updateDashboard();
+    if (!recommended) {
+        recommended = topics[0];
+    }
+
+    document.getElementById("recommendation").innerHTML = `
+
+        <div class="recommend-card">
+
+            <div class="recommend-icon">
+                ${recommended.icon}
+            </div>
+
+            <div>
+                <h3>${recommended.title}</h3>
+                <p>
+                    Materi yang bisa kamu pelajari atau
+                    latih berikutnya.
+                </p>
+            </div>
+
+            <button class="primary-btn"
+                    onclick="showMaterial(${recommended.id})">
+                Pelajari
+            </button>
+
+        </div>
+
+    `;
+
+    renderAchievements();
+
 }
 
 
-function loadHistory() {
+/* ================= ACHIEVEMENT ================= */
 
-    const key =
-        "mathLearnHistory_" + student.name;
+function renderAchievements() {
 
-    const history =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
+    const stats = calculateStats();
 
-    const container =
-        document.getElementById(
-            "historyContainer"
-        );
+    const achievements = [
 
-    if (history.length === 0) {
+        {
+            icon: "🌱",
+            title: "First Step",
+            description: "Mengerjakan 10 soal",
+            unlocked: stats.answered >= 10
+        },
 
-        container.innerHTML = `
-            <div class="panel">
-                Belum ada riwayat latihan.
+        {
+            icon: "🔥",
+            title: "Math Fighter",
+            description: "Mengerjakan 50 soal",
+            unlocked: stats.answered >= 50
+        },
+
+        {
+            icon: "🏆",
+            title: "Math Master",
+            description: "Mengerjakan 100 soal",
+            unlocked: stats.answered >= 100
+        },
+
+        {
+            icon: "💯",
+            title: "Perfect Score",
+            description: "Mendapat 100% akurasi",
+            unlocked: stats.answered >= 20 &&
+                      stats.accuracy === 100
+        }
+
+    ];
+
+    document.getElementById("achievementGrid")
+        .innerHTML = achievements.map(a => `
+
+            <div class="achievement
+                ${a.unlocked ? "unlocked" : ""}">
+
+                <div class="medal">${a.icon}</div>
+
+                <h3>${a.title}</h3>
+
+                <p>${a.description}</p>
+
             </div>
-        `;
 
-        return;
-    }
+        `).join("");
 
-    container.innerHTML =
-        history.map(item => `
+}
 
-            <div class="history-item">
 
-                <div>
-                    <strong>
-                        ${item.mode === "exam"
-                            ? "⏱️ Ujian"
-                            : "✏️ Latihan"}
-                    </strong>
+/* ================= MATERIAL ================= */
 
-                    <p>
-                        ${item.date}
-                    </p>
+function renderMaterials(filter = "") {
+
+    const query = filter.toLowerCase();
+
+    const filtered = topics.filter(topic =>
+        topic.title.toLowerCase().includes(query)
+    );
+
+    document.getElementById("materialGrid").innerHTML =
+        filtered.map(topic => `
+
+            <div class="material-card">
+
+                <div class="material-icon">
+                    ${topic.icon}
                 </div>
 
-                <div>
-                    <strong>
-                        ${item.score}
-                    </strong>
+                <h3>${topic.id}. ${topic.title}</h3>
 
-                    <p>
-                        ${item.correct}/${item.total} benar
-                    </p>
+                <p>${topic.description}</p>
+
+                <div class="formula-mini">
+                    ${topic.formula}
+                </div>
+
+                <div class="card-buttons">
+
+                    <button class="view-btn"
+                            onclick="showMaterial(${topic.id})">
+                        Lihat
+                    </button>
+
+                    <button class="practice-btn"
+                            onclick="startPractice(${topic.id})">
+                        Latihan
+                    </button>
+
                 </div>
 
             </div>
 
         `).join("");
+
 }
 
 
-/* =====================================================
-   DASHBOARD STATISTICS
-===================================================== */
+renderMaterials();
 
-function updateDashboard() {
 
-    if (!student.name) return;
+document.getElementById("materialSearch")
+    .addEventListener("input", e => {
 
-    const key =
-        "mathLearnHistory_" + student.name;
-
-    const history =
-        JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-    let total = 0;
-    let correct = 0;
-    let wrong = 0;
-
-    history.forEach(item => {
-
-        total += item.total;
-        correct += item.correct;
-        wrong += item.wrong;
+        renderMaterials(e.target.value);
 
     });
 
-    const average =
-        history.length
-        ? Math.round(
-            history.reduce(
-                (sum, item) => sum + item.score,
-                0
-            ) / history.length
-          )
-        : 0;
 
-    document.getElementById(
-        "totalQuestions"
-    ).textContent = total;
+/* GLOBAL SEARCH */
 
-    document.getElementById(
-        "correctQuestions"
-    ).textContent = correct;
+document.getElementById("globalSearch")
+    .addEventListener("input", e => {
 
-    document.getElementById(
-        "wrongQuestions"
-    ).textContent = wrong;
+        const value = e.target.value.trim();
 
-    document.getElementById(
-        "averageScore"
-    ).textContent = average;
+        if (value.length > 0) {
+
+            openPage("materials");
+
+            document.getElementById("materialSearch")
+                .value = value;
+
+            renderMaterials(value);
+
+        }
+
+    });
+
+
+/* ================= MODAL ================= */
+
+let selectedModalTopic = null;
+
+function showMaterial(id) {
+
+    const topic = topics.find(t => t.id === id);
+
+    if (!topic) return;
+
+    selectedModalTopic = id;
+
+    document.getElementById("modalBadge")
+        .textContent = topic.icon + " " + topic.title;
+
+    document.getElementById("modalTitle")
+        .textContent = topic.title;
+
+    document.getElementById("modalDescription")
+        .textContent = topic.description;
+
+    document.getElementById("modalFormula")
+        .textContent = topic.formula;
+
+    document.getElementById("modalExample")
+        .textContent = topic.example;
+
+    document.getElementById("materialModal")
+        .classList.remove("hidden");
+
 }
 
 
-/* =====================================================
-   LOGOUT
-===================================================== */
+document.getElementById("closeModal")
+    .addEventListener("click", () => {
 
-function logout() {
+        document.getElementById("materialModal")
+            .classList.add("hidden");
 
-    if (
-        !confirm(
-            "Yakin ingin keluar dari Math Learn?"
-        )
-    ) {
+    });
+
+
+document.getElementById("modalPractice")
+    .addEventListener("click", () => {
+
+        document.getElementById("materialModal")
+            .classList.add("hidden");
+
+        startPractice(selectedModalTopic);
+
+    });
+
+
+/* ================= TOPIC SELECT ================= */
+
+function renderTopicSelector() {
+
+    document.getElementById("topicSelectGrid")
+        .innerHTML = topics.map(topic => {
+
+            const done =
+                progress[topic.id].answered.length;
+
+            return `
+
+                <button class="topic-button"
+                        onclick="startPractice(${topic.id})">
+
+                    <span class="topic-icon">
+                        ${topic.icon}
+                    </span>
+
+                    <strong>
+                        ${topic.title}
+                    </strong>
+
+                    <small>
+                        ${done}/20 soal dikerjakan
+                    </small>
+
+                </button>
+
+            `;
+
+        }).join("");
+
+}
+
+
+renderTopicSelector();
+
+
+/* ================= QUIZ ================= */
+
+let currentTopic = null;
+let currentQuestionIndex = 0;
+let selectedAnswer = null;
+let sessionScore = 0;
+let sessionAnswered = 0;
+
+
+function startPractice(topicId) {
+
+    currentTopic =
+        topics.find(t => t.id === topicId);
+
+    if (!currentTopic) return;
+
+    currentQuestionIndex = 0;
+    selectedAnswer = null;
+    sessionScore = 0;
+    sessionAnswered = 0;
+
+    document.getElementById("topicSelector")
+        .classList.add("hidden");
+
+    document.getElementById("quizArea")
+        .classList.remove("hidden");
+
+    renderQuestion();
+
+    openPage("practice");
+
+}
+
+
+function renderQuestion() {
+
+    const question =
+        currentTopic.questions[currentQuestionIndex];
+
+    selectedAnswer = null;
+
+    document.getElementById("quizTopicName")
+        .textContent = currentTopic.title;
+
+    document.getElementById("questionNumber")
+        .textContent =
+        `Soal ${currentQuestionIndex + 1} dari 20`;
+
+    document.getElementById("sessionScore")
+        .textContent =
+        `Nilai: ${sessionScore}`;
+
+    document.getElementById("quizProgressBar")
+        .style.width =
+        `${((currentQuestionIndex + 1) / 20) * 100}%`;
+
+    document.getElementById("questionText")
+        .textContent =
+        question.question;
+
+    document.getElementById("options").innerHTML =
+        question.options.map((option,index) => `
+
+            <button class="option"
+                    data-index="${index}">
+                <strong>${String.fromCharCode(65+index)}.</strong>
+                ${option}
+            </button>
+
+        `).join("");
+
+    document.querySelectorAll(".option")
+        .forEach(btn => {
+
+            btn.addEventListener("click", () => {
+
+                if (selectedAnswer !== null) return;
+
+                document.querySelectorAll(".option")
+                    .forEach(o =>
+                        o.classList.remove("selected")
+                    );
+
+                btn.classList.add("selected");
+
+                selectedAnswer =
+                    Number(btn.dataset.index);
+
+            });
+
+        });
+
+
+    document.getElementById("submitAnswer")
+        .classList.remove("hidden");
+
+    document.getElementById("feedback")
+        .className = "feedback hidden";
+
+    document.getElementById("feedback")
+        .innerHTML = "";
+
+    document.getElementById("solution")
+        .classList.add("hidden");
+
+    document.getElementById("nextQuestion")
+        .classList.add("hidden");
+
+}
+
+
+document.getElementById("submitAnswer")
+    .addEventListener("click", checkAnswer);
+
+
+function checkAnswer() {
+
+    if (selectedAnswer === null) {
+
+        alert("Pilih jawaban terlebih dahulu!");
+
         return;
     }
 
-    localStorage.removeItem(
-        "mathLearnStudent"
-    );
+    const question =
+        currentTopic.questions[currentQuestionIndex];
 
-    location.reload();
+    const isCorrect =
+        selectedAnswer === question.correct;
+
+    const topicProgress =
+        progress[currentTopic.id];
+
+    if (!topicProgress.answered.includes(currentQuestionIndex)) {
+
+        topicProgress.answered.push(
+            currentQuestionIndex
+        );
+
+        if (isCorrect) {
+
+            topicProgress.correct.push(
+                currentQuestionIndex
+            );
+
+        }
+
+        saveProgress();
+
+    }
+
+
+    sessionAnswered++;
+
+    if (isCorrect) {
+        sessionScore++;
+    }
+
+
+    document.querySelectorAll(".option")
+        .forEach((btn,index) => {
+
+            if (index === question.correct) {
+                btn.classList.add("correct");
+            }
+
+            if (
+                index === selectedAnswer &&
+                !isCorrect
+            ) {
+                btn.classList.add("wrong");
+            }
+
+            btn.disabled = true;
+
+        });
+
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.classList.remove("hidden");
+
+    feedback.className =
+        "feedback " +
+        (isCorrect ? "correct" : "wrong");
+
+    feedback.innerHTML = isCorrect
+        ? "✅ Jawaban kamu benar!"
+        : `❌ Jawaban kurang tepat. Jawaban yang benar adalah <strong>${question.options[question.correct]}</strong>.`;
+
+
+    document.getElementById("solution")
+        .classList.remove("hidden");
+
+    document.getElementById("solutionSteps")
+        .innerHTML =
+        question.steps.map(step =>
+            `<li>${step}</li>`
+        ).join("");
+
+
+    document.getElementById("submitAnswer")
+        .classList.add("hidden");
+
+    document.getElementById("nextQuestion")
+        .classList.remove("hidden");
+
 }
 
 
-/* =====================================================
-   INITIALIZE
-===================================================== */
+document.getElementById("nextQuestion")
+    .addEventListener("click", () => {
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+        if (currentQuestionIndex < 19) {
 
-        loadStudent();
+            currentQuestionIndex++;
 
-    }
-);
+            renderQuestion();
+
+        } else {
+
+            finishQuiz();
+
+        }
+
+    });
+
+
+/* ================= FINISH QUIZ ================= */
+
+function finishQuiz() {
+
+    const percentage =
+        Math.round(sessionScore / 20 * 100);
+
+    document.querySelector(".question-card")
+        .innerHTML = `
+
+        <div style="text-align:center;padding:30px">
+
+            <div style="font-size:60px">🎉</div>
+
+            <h2>Latihan Selesai!</h2>
+
+            <p style="color:var(--muted);margin:10px 0 25px">
+                Kamu telah menyelesaikan 20 soal
+                ${currentTopic.title}.
+            </p>
+
+            <div style="
+                font-size:50px;
+                font-weight:bold;
+                color:var(--primary);
+                margin:20px">
+                ${percentage}
+            </div>
+
+            <p>
+                Jawaban benar:
+                <strong>${sessionScore}/20</strong>
+            </p>
+
+            <div style="
+                display:flex;
+                gap:10px;
+                justify-content:center;
+                margin-top:25px">
+
+                <button class="primary-btn"
+                        onclick="startPractice(${currentTopic.id})">
+                    🔄 Ulangi
+                </button>
+
+                <button class="secondary-btn"
+                        onclick="backToTopics()">
+                    📚 Pilih Materi
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+    updateDashboard();
+
+}
+
+
+function backToTopics() {
+
+    document.getElementById("quizArea")
+        .classList.add("hidden");
+
+    document.getElementById("topicSelector")
+        .classList.remove("hidden");
+
+    renderTopicSelector();
+
+}
+
+
+/* ================= BACK BUTTON ================= */
+
+document.getElementById("backTopicBtn")
+    .addEventListener("click", backToTopics);
+
+
+/* ================= PROGRESS PAGE ================= */
+
+function updateProgressPage() {
+
+    const stats = calculateStats();
+
+    const percent =
+        Math.round(stats.answered / 400 * 100);
+
+    document.getElementById("overallPercent")
+        .textContent = percent + "%";
+
+    document.getElementById("overallText")
+        .textContent =
+        `${stats.answered} dari 400 soal selesai`;
+
+    document.getElementById("progressAnswered")
+        .textContent = stats.answered;
+
+    document.getElementById("progressCorrect")
+        .textContent = stats.correct;
+
+    document.getElementById("progressAccuracy")
+        .textContent = stats.accuracy + "%";
+
+
+    document.querySelector(".circle-progress")
+        .style.background =
+        `conic-gradient(
+            var(--primary) ${percent * 3.6}deg,
+            #e9eaf0 ${percent * 3.6}deg
+        )`;
+
+
+    document.getElementById("progressList")
+        .innerHTML = topics.map(topic => {
+
+            const answered =
+                progress[topic.id].answered.length;
+
+            const percent =
+                Math.round(answered / 20 * 100);
+
+            return `
+
+                <div class="progress-row">
+
+                    <div class="progress-row-top">
+
+                        <strong>
+                            ${topic.icon} ${topic.title}
+                        </strong>
+
+                        <span>
+                            ${answered}/20 soal
+                        </span>
+
+                    </div>
+
+                    <div class="mini-progress">
+
+                        <div style="
+                            width:${percent}%">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* ================= THEME ================= */
+
+const savedTheme =
+    localStorage.getItem("mathlearn_theme");
+
+if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+}
+
+
+document.getElementById("themeBtn")
+    .addEventListener("click", () => {
+
+        document.body.classList.toggle("dark");
+
+        const isDark =
+            document.body.classList.contains("dark");
+
+        localStorage.setItem(
+            "mathlearn_theme",
+            isDark ? "dark" : "light"
+        );
+
+        document.getElementById("themeBtn")
+            .textContent =
+            isDark
+                ? "☀️ Mode Terang"
+                : "🌙 Mode Gelap";
+
+    });
+
+
+/* ================= MOBILE MENU ================= */
+
+document.getElementById("menuBtn")
+    .addEventListener("click", () => {
+
+        document.getElementById("sidebar")
+            .classList.toggle("open");
+
+    });
+
+
+/* ================= RESET ================= */
+
+document.getElementById("resetBtn")
+    .addEventListener("click", () => {
+
+        const confirmReset =
+            confirm(
+                "Yakin ingin menghapus seluruh progress?"
+            );
+
+        if (!confirmReset) return;
+
+        localStorage.removeItem(STORAGE_KEY);
+
+        location.reload();
+
+    });
+
+
+/* ================= INITIAL ================= */
+
+updateDashboard();
+updateProgressPage();
